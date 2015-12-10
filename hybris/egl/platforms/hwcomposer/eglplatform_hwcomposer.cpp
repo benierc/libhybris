@@ -54,12 +54,14 @@ extern "C" void hwcomposerws_Terminate(_EGLDisplay *dpy)
 extern "C" EGLNativeWindowType hwcomposerws_CreateWindow(EGLNativeWindowType win, _EGLDisplay *display)
 {
 	assert (gralloc != NULL);
-	assert (_nativewindow == NULL);
-
-	HWComposerNativeWindow *window = static_cast<HWComposerNativeWindow *>((ANativeWindow *) win);
-	window->setup(gralloc, alloc);
-	_nativewindow = window;
-	_nativewindow->common.incRef(&_nativewindow->common);
+	//assert (_nativewindow == NULL);
+	if (_nativewindow == NULL)
+	{
+		HWComposerNativeWindow *window = static_cast<HWComposerNativeWindow *>((ANativeWindow *) win);
+		window->setup(gralloc, alloc);
+		_nativewindow = window;
+		_nativewindow->common.incRef(&_nativewindow->common);
+	}
 	return (EGLNativeWindowType) static_cast<struct ANativeWindow *>(_nativewindow);
 }
 
@@ -73,7 +75,7 @@ extern "C" void hwcomposerws_DestroyWindow(EGLNativeWindowType win)
 	_nativewindow = NULL;
 }
 
-extern "C" __eglMustCastToProperFunctionPointerType hwcomposerws_eglGetProcAddress(const char *procname) 
+extern "C" __eglMustCastToProperFunctionPointerType hwcomposerws_eglGetProcAddress(const char *procname)
 {
 	return eglplatformcommon_eglGetProcAddress(procname);
 }

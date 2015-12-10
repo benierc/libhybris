@@ -28,7 +28,6 @@
 extern "C" {
 #include <sync/sync.h>
 };
- 
 
 extern "C" struct ANativeWindow *HWCNativeWindowCreate(unsigned int width, unsigned int height, unsigned int format, HWCPresentCallback present, void *cb_data)
 {
@@ -126,7 +125,7 @@ HWComposerNativeWindow::HWComposerNativeWindow(unsigned int width, unsigned int 
     m_width = width;
     m_height = height;
     m_bufFormat = format;
-    m_usage = GRALLOC_USAGE_HW_COMPOSER|GRALLOC_USAGE_HW_FB;
+    m_usage = GRALLOC_USAGE_HW_COMPOSER;
     m_bufferCount = 2;
     m_nextBuffer = 0;
 }
@@ -427,7 +426,8 @@ unsigned int HWComposerNativeWindow::transformHint() const
  */
 int HWComposerNativeWindow::setUsage(int usage)
 {
-    usage |= GRALLOC_USAGE_HW_COMPOSER|GRALLOC_USAGE_HW_FB;
+    //usage |= GRALLOC_USAGE_HW_COMPOSER|GRALLOC_USAGE_HW_FB;
+    usage |= GRALLOC_USAGE_HW_COMPOSER;
     int need_realloc = (m_usage != (unsigned int) usage);
     TRACE("usage=x%x realloc=%d", usage, need_realloc);
     m_usage = usage;
@@ -483,7 +483,7 @@ void HWComposerNativeWindow::allocateBuffers()
 
         TRACE("buffer %i is at %p (native %p),err=%s, handle=%p stride=%i",
                 i, b, (ANativeWindowBuffer*)b,
-                strerror(-b->status), b->handle, b->stride);
+                strerror(b->status), b->handle, b->stride);
 
         if (b->status) {
             b->common.decRef(&b->common);

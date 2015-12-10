@@ -8,12 +8,8 @@ bin_PROGRAMS = \
 
 if HAS_ANDROID_4_2_0
 bin_PROGRAMS += test_hwcomposer
+bin_PROGRAMS += test_hwcomposer_inc
 endif
-
-if HAS_ANDROID_5_0_0
-bin_PROGRAMS += test_hwcomposer
-endif
-
 
 if HAS_LIBNFC_NXP_HEADERS
 # test_nfc depends on NFC hardware HAL interface, which is only
@@ -31,7 +27,11 @@ endif
 endif
 endif
 
-bin_PROGRAMS += test_audio
+# Please re-enable your test programs according to android
+# if HAS_ANDROID_X_Y_Z
+# bin_PROGRAMS += test_audio
+# endif
+
 test_audio_SOURCES = test_audio.c
 test_audio_CFLAGS = \
 	-I$(top_srcdir)/include
@@ -82,10 +82,29 @@ test_hwcomposer_CXXFLAGS = \
 	-I$(top_srcdir)/egl/platforms/hwcomposer \
 	-I$(top_srcdir)/libsync
 
+test_hwcomposer_inc_SOURCES = test_hwcomposer_inc.c
+test_hwcomposer_inc_CFLAGS = \
+	-I$(top_srcdir)/include \
+	$(ANDROID_HEADERS_CFLAGS) \
+	-I$(top_srcdir)/common \
+	-I$(top_srcdir)/egl/platforms/common \
+	-I$(top_srcdir)/egl/platforms/hwcomposer \
+	-I$(top_srcdir)/libsync
+
 if WANT_MESA
 test_hwcomposer_CXXFLAGS += -DLIBHYBRIS_WANTS_MESA_X11_HEADERS
 endif
 test_hwcomposer_LDADD = \
+	-lm \
+	$(top_builddir)/common/libhybris-common.la \
+	$(top_builddir)/egl/platforms/hwcomposer/libhybris-hwcomposerwindow.la \
+	$(top_builddir)/egl/platforms/common/libhybris-eglplatformcommon.la \
+	$(top_builddir)/egl/libEGL.la \
+	$(top_builddir)/glesv2/libGLESv2.la \
+	$(top_builddir)/libsync/libsync.la \
+	$(top_builddir)/hardware/libhardware.la
+
+test_hwcomposer_inc_LDADD = \
 	-lm \
 	$(top_builddir)/common/libhybris-common.la \
 	$(top_builddir)/egl/platforms/hwcomposer/libhybris-hwcomposerwindow.la \
